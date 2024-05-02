@@ -1,4 +1,3 @@
-
 # MyTools for FFXI Private Server
 
 This toolbox is designed to enhance the functionality of the Final Fantasy XI server emulator by LandSandBoat. It provides a suite of tools for managing the auction house, mailing items to players, and character inventories, directly interfacing with the xidb database to perform these operations.
@@ -48,7 +47,26 @@ Before running MyTools, you'll need to set up your configuration file:
 
 This file contains sensitive information, such as your database password, which is why it is not included in the repository and listed in `.gitignore`.
 
-## Running MyTools
+
+## Auction House Data Setup
+
+The functionality of the `update_auction_house` tool depends on the `ah_data` database, which contains critical information about item prices.
+
+### Importing the `ah_data` Database
+
+A SQL dump of the `ah_data` database is provided in the `/auction/assets` directory. To import this data into your system, follow these steps:
+
+1. **Ensure MariaDB/MySQL is installed**: This step should have been completed during the initial server setup.
+2. **Create and Import the Database**:
+
+   - Navigate to the directory containing `ah_data.sql`.
+   - Run the following command to import the database:
+     ```bash
+     mysql -u root -p ah_data < ah_data.sql
+     ```
+
+
+## Running The Program
 
 Execute the main script to access the toolbox:
 

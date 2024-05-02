@@ -10,17 +10,32 @@ from inventory_manager import InventoryManager
 class GameToolbox:
     def __init__(self):
         self.running = True
-        self.inventory_manager = InventoryManager()  # Initialize InventoryManager
+        self.inventory_manager = InventoryManager()
 
     def main_menu(self):
-        print(Style.BRIGHT + Fore.CYAN + "Timeless Final Fantasy XI Toolbox")
-        print(Fore.CYAN + "Main Menu\n")
-        print(Fore.GREEN + "1. Auction House")
-        print(Fore.GREEN + "2. Mailbox")
-        print(Fore.GREEN + "3. Inventory Management")  # New Inventory Management Option
-        print(Fore.RED + "4. Exit")
-        choice = input(Fore.YELLOW + "Please select an option: ")
-        return choice
+        menu_options = {
+            '1': self.auction_house_menu,
+            '2': self.mailbox_menu,
+            '3': self.inventory_menu,
+            '4': self.exit_program
+        }
+        while True:
+            print(Style.BRIGHT + Fore.CYAN + "Timeless Final Fantasy XI Toolbox")
+            print(Fore.CYAN + "Main Menu\n")
+            print(Fore.GREEN + "1. Auction House")
+            print(Fore.GREEN + "2. Mailbox")
+            print(Fore.GREEN + "3. Inventory Management")
+            print(Fore.RED + "4. Exit")
+
+            choice = input(Fore.YELLOW + "Please select an option: ")
+            action = menu_options.get(choice, lambda: None)
+            if action and action() == True:
+                return
+
+    def exit_program(self):
+        print(Fore.GREEN + "Goodbye!")
+        self.running = False
+        return True
 
     def auction_house_menu(self):
         while True:
@@ -37,7 +52,7 @@ class GameToolbox:
             elif choice == "3":
                 buy_random_items()
             elif choice == "4":
-                break  # Exit the loop to return to main menu
+                break
             else:
                 print(Fore.RED + "Invalid option")
 
@@ -59,7 +74,7 @@ class GameToolbox:
             elif mode == "3":
                 deliver_instance.interact_with_user(mode="all")
             elif mode == "4":
-                break  # Exit the loop to return to main menu
+                break
             else:
                 print(Fore.RED + "Invalid option")
 
@@ -69,7 +84,7 @@ class GameToolbox:
             print(Fore.YELLOW + "1. Print Character Inventory")
             print(
                 Fore.YELLOW + "2. Add Item to Character Inventory"
-            )  # New option for adding an item
+            )
             print(Fore.RED + "3. Return to Main Menu")
             choice = input(Fore.YELLOW + "Please select an option: ")
             if choice == "1":
@@ -79,11 +94,12 @@ class GameToolbox:
                 char_name = input(Fore.YELLOW + "Enter character name: ")
                 char_id = self.inventory_manager.get_char_id(char_name)
                 if char_id is not None:
-                    item_id = int(input(Fore.YELLOW + "Enter item ID: "))
-                    quantity = int(input(Fore.YELLOW + "Enter quantity: "))
-                    self.inventory_manager.add_item_to_inventory(
-                        char_id, item_id, quantity
-                    )
+                    try:
+                        item_id = int(input(Fore.YELLOW + "Enter item ID: "))
+                        quantity = int(input(Fore.YELLOW + "Enter quantity: "))
+                        self.inventory_manager.add_item_to_inventory(char_id, item_id, quantity)
+                    except ValueError:
+                        print(Fore.RED + "Please enter valid integers for item ID and quantity.")
                 else:
                     print(Fore.RED + "Character not found.")
             elif choice == "3":
@@ -93,18 +109,9 @@ class GameToolbox:
 
     def run(self):
         while self.running:
-            choice = self.main_menu()
-            if choice == "1":
-                self.auction_house_menu()
-            elif choice == "2":
-                self.mailbox_menu()
-            elif choice == "3":
-                self.inventory_menu()
-            elif choice == "4":
-                print(Fore.GREEN + "Goodbye!")
-                self.running = False
-            else:
-                print(Fore.RED + "Invalid option")
+            self.main_menu()
+            if not self.running:
+                break
 
 
 if __name__ == "__main__":

@@ -70,3 +70,14 @@ def execute_query(query, params=None, fetch=False, commit=False, database=None):
         # Always close the cursor and connection
         cursor.close()
         conn.close()
+
+
+def check_database_exists(database):
+    check_data_exists = execute_query(
+        f"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{database}'",
+        fetch=True,
+        database=database,
+    )
+    if not check_data_exists:
+        return False
+    return True

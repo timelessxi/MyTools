@@ -1,4 +1,4 @@
-from database.database import execute_query
+from database import execute_query
 
 
 class Deliver:
@@ -7,12 +7,12 @@ class Deliver:
 
     def get_charid(self, charname):
         query = "SELECT charid FROM chars WHERE charname = %s"
-        result = execute_query(query, params=(charname,), fetch=True)
+        result = execute_query(query, params=(charname,), fetch=True, database="xidb")
         return result[0][0] if result else None
 
     def get_all_charids(self):
         query = "SELECT charid FROM chars"
-        results = execute_query(query, fetch=True)
+        results = execute_query(query, fetch=True, database="xidb")
         return [result[0] for result in results] if results else []
 
     def search_items(self, item_name):
@@ -26,7 +26,7 @@ class Deliver:
         results = []
         for table in tables:
             query = f"SELECT itemid, name FROM {table} WHERE name LIKE %s"
-            fetched_items = execute_query(query, params=(f"%{item_name}%",), fetch=True)
+            fetched_items = execute_query(query, params=(f"%{item_name}%",), fetch=True, database="xidb")
             if fetched_items:
                 results.extend(fetched_items)
         return results
@@ -38,7 +38,7 @@ class Deliver:
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         data = (charid, None, 1, 0, itemid, 0, quantity, None, 0, "MHMU", 0, 0)
-        execute_query(query, params=data, commit=True)
+        execute_query(query, params=data, commit=True, database="xidb")
 
     def interact_with_user(self, mode="single"):
         charids = []
@@ -79,13 +79,12 @@ class Deliver:
 
         selected_item = items[item_choice]
         quantity = int(input("Enter the quantity to send: "))
-
+        sent_amount = 0
         for charid in charids:
             if charid:
                 self.send_item(charid, selected_item[0], quantity)
-
-        if mode == "all":
-            print(f"Sent {quantity} {selected_item[1].title().replace('_', ' ')} to all characters.")
+                sent_amount += 1
+        print(f"Sent {sent_amount} items to {len(charids)} character(s).")
 
 
 

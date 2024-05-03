@@ -1,4 +1,4 @@
-# MyTools for FFXI Private Server
+# Tools for FFXI Private Server
 
 This toolbox is designed to enhance the functionality of the Final Fantasy XI server emulator by LandSandBoat. It provides a suite of tools for managing the auction house, mailing items to players, and character inventories, directly interfacing with the xidb database to perform these operations.
 
@@ -19,21 +19,21 @@ This toolbox is designed to enhance the functionality of the Final Fantasy XI se
 ## Installation
 
 1. Ensure the LandSandBoat server emulator is installed and properly configured.
-2. Clone the MyTools repository:
+2. Clone the TimelessToolbox repository:
    ```bash
-   git clone https://github.com/timelessxi/mytools.git
+   git clone https://github.com/timelessxi/TimelessToolbox.git
    ```
-3. Navigate to the MyTools directory and install dependencies:
+3. Navigate to the TimelessToolbox directory and install dependencies:
    ```bash
-   cd mytools
+   cd TimelessToolbox
    pip install -r requirements.txt
    ```
 
 ## Configuration
 
-Before running MyTools, you'll need to set up your configuration file:
+Before running TimelessToolbox, you'll need to set up your configuration file:
 
-1. Navigate to the `config` directory within the MyTools project.
+1. Navigate to the `config` directory within the TimelessToolbox project.
 2. Create a new file named `config.json`.
 3. Structure your `config.json` file as follows, replacing the placeholders with your actual database connection details:
    ```json
@@ -78,11 +78,11 @@ Follow the on-screen prompts to interact with the auction house, delivery system
 
 ## Integration with LandSandBoat Server
 
-MyTools directly interacts with the MySQL database used by the LandSandBoat server emulator. Ensure that any operations performed through MyTools are compatible with your server's version and configuration. Regularly backup your database to prevent data loss or corruption.
+TimelessToolbox directly interacts with the MySQL database used by the LandSandBoat server emulator. Ensure that any operations performed through MyTools are compatible with your server's version and configuration. Regularly backup your database to prevent data loss or corruption.
 
 ## Contributing
 
-Contributions to both MyTools and the LandSandBoat server emulator are welcome. Please adhere to each project's contribution guidelines.
+Contributions to both TimelessToolbox and the LandSandBoat server emulator are welcome. Please adhere to each project's contribution guidelines.
 
 ## License
 

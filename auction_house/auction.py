@@ -52,8 +52,7 @@ def buy_random_items():
     print("Buying random items...")
     current_time = int(time.time())
     all_items = execute_query(
-        "SELECT id, price FROM auction_house WHERE sell_date = 0", fetch=True
-    )
+        "SELECT id, price FROM auction_house WHERE sell_date = 0", fetch=True, database="xidb")
     if not all_items:
         print("No items available for purchase.")
         return
@@ -64,27 +63,28 @@ def buy_random_items():
         execute_query(
             "UPDATE auction_house SET buyer_name = %s, sale = %s, sell_date = %s WHERE id = %s AND sell_date = 0",
             (get_name(), item[1], current_time, item[0]),
-            commit=True,
-        )
+            commit=True, database="xidb")
     print(f"Randomly purchased items: {len(items_to_buy)}")
     print("\n")
 
 
 def buy_all_items():
-    # Purchase all items currently unsold in the auction house.
     print("Buying all items...")
     current_time = int(time.time())
     items_for_sale = execute_query(
-        "SELECT id, price FROM auction_house WHERE sell_date = 0", fetch=True
+        "SELECT id, price FROM auction_house WHERE sell_date = 0", fetch=True, database="xidb"
     )
+    if not items_for_sale:
+        print("No items available for purchase.")
+        return
+
     for item in items_for_sale:
         execute_query(
             "UPDATE auction_house SET buyer_name = %s, sale = %s, sell_date = %s WHERE id = %s AND sell_date = 0",
-            (get_name(), item[1], current_time, item[0]),
-            commit=True,
-        )
+            (get_name(), item[1], current_time, item[0]), commit=True, database="xidb")
     print(f"Purchased all items: {len(items_for_sale)}")
     print("\n")
+
 
 
 def update_auction_house():

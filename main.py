@@ -5,6 +5,8 @@ init(autoreset=True)
 from delivery_box import deliver
 from auction_house import update_auction_house, buy_all_items, buy_random_items
 from inventory_manager import InventoryManager
+from database import database
+import sys
 
 
 class GameToolbox:
@@ -61,7 +63,7 @@ class GameToolbox:
             print(Fore.CYAN + "Welcome to the Mailbox!")
             deliver_instance = (
                 deliver.Deliver()
-            )  # Create an instance of Deliver directly
+            )
             print(Fore.YELLOW + "1. Send item to a single character")
             print(Fore.YELLOW + "2. Send item to multiple characters")
             print(Fore.YELLOW + "3. Send an item to all characters")
@@ -108,11 +110,19 @@ class GameToolbox:
                 print(Fore.RED + "Invalid option")
 
     def run(self):
-        while self.running:
-            self.main_menu()
-            if not self.running:
-                break
-
+        try:
+            print(f"Before initialization, pool is: {database.pool}")
+            database.init_connection_pool()
+            print(f"After initialization, pool is: {database.pool}")
+            if database.pool is None:
+                raise Exception("Database connection pool could not be initialized.")
+            while self.running:
+                self.main_menu()
+                if not self.running:
+                    break
+        except Exception as e:
+            print(f"Critical error: {e}")
+            sys.exit(1)
 
 if __name__ == "__main__":
     toolbox = GameToolbox()

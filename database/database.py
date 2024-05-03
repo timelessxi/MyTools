@@ -1,27 +1,54 @@
-from mysql.connector import connect
+from mysql.connector import connect, pooling
 from config import load_config
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def get_db_connection():
+
+pool = None
+
+
+def init_connection_pool():
+    global pool
     try:
+
+
         config = load_config()
-        conn = connect(
+        if not config:
+            logging.error("Configuration is empty or could not be loaded.")
+            return
+        pool = pooling.MySQLConnectionPool(
+            pool_name="mypool",
+            pool_size=10,
+            pool_reset_session=True,
             host=config["host"],
             user=config["user"],
             password=config["password"],
-            database=config["database"],
             charset="utf8mb4"
         )
-        print("Database connection established successfully to", config["database"])
+        logging.info("Connection pool was successfully initialized.")
+        logging.info(f"Connection pool initialized with object: {pool}")
+    except Exception as e:
+        logging.error(f"Failed to initialize the connection pool: {e}")
+        raise  # This will cause the application to exit if the pool cannot be initialized.
+
+
+
+
+def get_db_connection(database=None):
+    try:
+        conn = pool.get_connection()
+        if database:
+            conn.cmd_query(f"USE {database}")
         return conn
     except Exception as e:
         logging.error(f"Failed to establish database connection: {e}")
         return None
 
-def execute_query(query, params=None, fetch=False, commit=False):
-    conn = get_db_connection()
+
+
+def execute_query(query, params=None, fetch=False, commit=False, database=None):
+    conn = get_db_connection(database=database)
     if conn is None:
         return None
     try:
@@ -38,5 +65,3 @@ def execute_query(query, params=None, fetch=False, commit=False):
     finally:
         cursor.close()
         conn.close()
-        print("Database connection closed.")
-

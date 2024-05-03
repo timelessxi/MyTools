@@ -131,7 +131,7 @@ def process_prices(item_id, single_price, stack_price, required_quantity, databa
                         """,
                         (item_id, random_seller, current_time, single_price),
                         commit=True,
-                        database=database,
+                        database='xidb',
                     )
                 except Exception as e:
                     logging.error(
@@ -154,7 +154,7 @@ def process_prices(item_id, single_price, stack_price, required_quantity, databa
                         """,
                         (item_id, random_seller, current_time, stack_price),
                         commit=True,
-                        database=database,
+                        database='xidb',
                     )
                 except Exception as e:
                     logging.error("Failed to insert record for stack price item: %s", e)

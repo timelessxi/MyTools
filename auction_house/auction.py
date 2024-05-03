@@ -3,7 +3,7 @@ import time
 import logging
 from database.database import execute_query
 
-
+# Map item rates to their required quantities in the auction house.
 rate_mapping = {
     "Dead Slow": 2,
     "Very Slow": 2,
@@ -15,6 +15,7 @@ rate_mapping = {
 
 
 def get_name():
+    # Generate a random name from a predefined list for auction item buyers and sellers.
     names = [
         "Aelar",
         "Brondar",
@@ -47,6 +48,7 @@ def get_name():
 
 
 def buy_random_items():
+    # Buy a random selection of items from the auction house amounting to 20% of current stock.
     print("Buying random items...")
     current_time = int(time.time())
     all_items = execute_query(
@@ -69,6 +71,7 @@ def buy_random_items():
 
 
 def buy_all_items():
+    # Purchase all items currently unsold in the auction house.
     print("Buying all items...")
     current_time = int(time.time())
     items_for_sale = execute_query(
@@ -85,19 +88,16 @@ def buy_all_items():
 
 
 def update_auction_house():
+    # Update auction house entries.
     logging.basicConfig(level=logging.DEBUG)
-    print("Updating auction house...")
+    print("Updating auction house... This may take a few moments.")
 
     try:
-        # Fetch items directly from the ah_data database, skipping the name
         items_query = "SELECT itemid, stack, single, rate FROM items"
-        # logging.debug("Executing query on ah_data: %s", items_query)
         items = execute_query(items_query, fetch=True, database="ah_data")
 
-        # Insert/update records in the xidb database
-        # logging.debug("Inserting into xidb.auction_house")
         for item in items:
-            item_id, stack_price, single_price, rate = item  # Corrected tuple unpacking
+            item_id, stack_price, single_price, rate = item
             required_quantity = rate_mapping.get(rate, 3)
             process_prices(
                 item_id, single_price, stack_price, required_quantity, database="xidb"
@@ -109,13 +109,9 @@ def update_auction_house():
         logging.error("Failed to update auction house: %s", e)
 
 
-import time
-
-
 def process_prices(item_id, single_price, stack_price, required_quantity, database):
-    current_time = int(time.time())  # UNIX_TIMESTAMP() equivalent in Python
-
-    # Process single price items
+    # Insert new auction house entries.
+    current_time = int(time.time())
     if single_price is not None:
         current_single_qty = check_existing_quantity(item_id, 0, database)
         if current_single_qty < required_quantity:
@@ -124,21 +120,16 @@ def process_prices(item_id, single_price, stack_price, required_quantity, databa
                 random_seller = get_name()
                 try:
                     execute_query(
-                        """
-                        INSERT INTO auction_house
-                        (itemid, stack, seller, seller_name, date, price, buyer_name, sale, sell_date)
-                        VALUES (%s, 0, 0, %s, %s, %s, NULL, 0, 0)
-                        """,
+                        "INSERT INTO auction_house (itemid, stack, seller, seller_name, date, price, buyer_name, sale, sell_date) VALUES (%s, 0, 0, %s, %s, %s, NULL, 0, 0)",
                         (item_id, random_seller, current_time, single_price),
                         commit=True,
-                        database='xidb',
+                        database="xidb",
                     )
                 except Exception as e:
                     logging.error(
                         "Failed to insert record for single price item: %s", e
                     )
 
-    # Process stack price items
     if stack_price is not None:
         current_stack_qty = check_existing_quantity(item_id, 1, database)
         if current_stack_qty < required_quantity:
@@ -147,20 +138,17 @@ def process_prices(item_id, single_price, stack_price, required_quantity, databa
                 random_seller = get_name()
                 try:
                     execute_query(
-                        """
-                        INSERT INTO auction_house
-                        (itemid, stack, seller, seller_name, date, price, buyer_name, sale, sell_date)
-                        VALUES (%s, 1, 0, %s, %s, %s, NULL, 0, 0)
-                        """,
+                        "INSERT INTO auction_house (itemid, stack, seller, seller_name, date, price, buyer_name, sale, sell_date) VALUES (%s, 1, 0, %s, %s, %s, NULL, 0, 0)",
                         (item_id, random_seller, current_time, stack_price),
                         commit=True,
-                        database='xidb',
+                        database="xidb",
                     )
                 except Exception as e:
                     logging.error("Failed to insert record for stack price item: %s", e)
 
 
 def check_existing_quantity(item_id, stack, database):
+    # Check how many of a specific item are already listed in the auction house.
     result = execute_query(
         "SELECT COUNT(*) FROM auction_house WHERE itemid = %s AND stack = %s AND sell_date = 0",
         (item_id, stack),
@@ -168,4 +156,3 @@ def check_existing_quantity(item_id, stack, database):
         database=database,
     )
     return result[0][0] if result else 0
-

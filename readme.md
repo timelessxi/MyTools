@@ -1,5 +1,6 @@
 # Tools for FFXI Private Server
 
+
 This toolbox is designed to enhance the functionality of the Final Fantasy XI server emulator by LandSandBoat. It provides a suite of tools for managing the auction house, mailing items to players, and character inventories, directly interfacing with the xidb database to perform these operations.
 
 ## Features
@@ -22,9 +23,8 @@ This toolbox is designed to enhance the functionality of the Final Fantasy XI se
 2. Clone the TimelessToolbox repository:
    ```bash
    git clone https://github.com/timelessxi/TimelessToolbox.git
-   ```
 3. Navigate to the TimelessToolbox directory and install dependencies:
-   ```bash
+    ```bash
    cd TimelessToolbox
    pip install -r requirements.txt
    ```
@@ -47,24 +47,28 @@ Before running TimelessToolbox, you'll need to set up your configuration file:
 
 This file contains sensitive information, such as your database password, which is why it is not included in the repository and listed in `.gitignore`.
 
-
 ## Auction House Data Setup
 
-The functionality of the `update_auction_house` tool depends on the `ah_data` database, which contains critical information about item prices.
+The functionality of the update_auction_house tool depends on the ah_data database, which contains critical information about item prices.
 
-### Importing the `ah_data` Database
+### Importing the ah_data Database
 
-A SQL dump of the `ah_data` database is provided in the `/auction/assets` directory. To import this data into your system, follow these steps:
+A SQL dump of the ah_data database is provided in the /auction/assets directory. To import this data into your system, follow these steps:
 
-1. **Ensure MariaDB/MySQL is installed**: This step should have been completed during the initial server setup.
-2. **Create and Import the Database**:
+- **Ensure MariaDB/MySQL is installed**: This step should have been completed during the initial server setup.
+- **Create the Database**:
+  If the ah_data database does not exist, create it using the following command:
+  ```bash
+  mysql -u root -p -e "CREATE DATABASE ah_data"
+  ```
 
-   - Navigate to the directory containing `ah_data.sql`.
-   - Run the following command to import the database:
-     ```bash
-     mysql -u root -p ah_data < ah_data.sql
-     ```
+### Import the Database
 
+- Navigate to the directory containing ah_data.sql.
+- Run the following command to import the database:
+  ```bash
+  mysql -u root -p ah_data < ah_data.sql
+  ```
 
 ## Running The Program
 

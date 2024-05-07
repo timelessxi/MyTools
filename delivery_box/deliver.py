@@ -7,12 +7,23 @@ class Deliver:
 
     def get_charid(self, charname):
         query = "SELECT charid FROM chars WHERE charname = %s"
-        result = execute_query(query, params=(charname,), fetch=True, database="xidb")
+        try:
+            result = execute_query(
+                query, params=(charname,), fetch=True, database="xidb"
+            )
+        except Exception as e:
+            print(f"Failed to get character ID: {e}")
+            result = None
+
         return result[0][0] if result else None
 
     def get_all_charids(self):
         query = "SELECT charid FROM chars"
-        results = execute_query(query, fetch=True, database="xidb")
+        try:
+            results = execute_query(query, fetch=True, database="xidb")
+        except Exception as e:
+            print(f"Failed to get all character IDs: {e}")
+            results = None
         return [result[0] for result in results] if results else []
 
     def search_items(self, item_name):
@@ -26,7 +37,13 @@ class Deliver:
         results = []
         for table in tables:
             query = f"SELECT itemid, name FROM {table} WHERE name LIKE %s"
-            fetched_items = execute_query(query, params=(f"%{item_name}%",), fetch=True, database="xidb")
+            try:
+                fetched_items = execute_query(
+                    query, params=(f"%{item_name}%",), fetch=True, database="xidb"
+                )
+            except Exception as e:
+                print(f"Failed to search for items: {e}")
+                fetched_items = None
             if fetched_items:
                 results.extend(fetched_items)
         return results
@@ -38,7 +55,10 @@ class Deliver:
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         data = (charid, None, 1, 0, itemid, 0, quantity, None, 0, "MHMU", 0, 0)
-        execute_query(query, params=data, commit=True, database="xidb")
+        try:
+            execute_query(query, params=data, commit=True, database="xidb")
+        except Exception as e:
+            print(f"Failed to send item: {e}")
 
     def interact_with_user(self, mode="single"):
         charids = []
@@ -48,9 +68,13 @@ class Deliver:
                 print("No characters found.")
                 return
         elif mode == "multiple":
-            charnames = input("Enter the names of the characters separated by commas (e.g., John, Jane, Doe): ")
-            charnames = [name.strip() for name in charnames.split(',')]
-            charids = [self.get_charid(name) for name in charnames if self.get_charid(name)]
+            charnames = input(
+                "Enter the names of the characters separated by commas (e.g., John, Jane, Doe): "
+            )
+            charnames = [name.strip() for name in charnames.split(",")]
+            charids = [
+                self.get_charid(name) for name in charnames if self.get_charid(name)
+            ]
             if not charids:
                 print("One or more characters not found.")
                 return
@@ -85,6 +109,3 @@ class Deliver:
                 self.send_item(charid, selected_item[0], quantity)
                 sent_amount += 1
         print(f"Sent {sent_amount} items to {len(charids)} character(s).")
-
-
-

@@ -11,7 +11,7 @@ class InventoryManager:
     def get_char_id(self, char_name):
         # Retrieves the character ID based on the character name.
         query = "SELECT charid FROM chars WHERE charname = %s;"
-        result = execute_query(query, params=(char_name,), fetch=True)
+        result = execute_query(query, params=(char_name,), fetch=True, database="xidb")
         if result:
             return result[0][0]  # Return the first result's ID.
         return None
@@ -19,7 +19,7 @@ class InventoryManager:
     def get_inventory(self, char_id):
         # Fetches the inventory for a given character ID.
         query = "SELECT itemid, quantity FROM char_inventory WHERE charid = %s;"
-        results = execute_query(query, params=(char_id,), fetch=True)
+        results = execute_query(query, params=(char_id,), fetch=True, database="xidb")
         return results
 
     def get_item_names(self, item_ids):
@@ -30,7 +30,7 @@ class InventoryManager:
         query = (
             f"SELECT itemid, name FROM item_basic WHERE itemid IN ({format_strings});"
         )
-        results = execute_query(query, params=item_ids, fetch=True)
+        results = execute_query(query, params=item_ids, fetch=True, database="xidb")
         return {itemid: name.title().replace("_", " ") for itemid, name in results}
 
     def print_inventory(self, char_name):
@@ -102,6 +102,7 @@ class InventoryManager:
                 insert_query,
                 params=(char_id, next_slot, item_id, quantity),
                 commit=True,
+                database="xidb",
             )
             logging.info(
                 "Item added successfully. Player will need to zone or relog to see the changes."

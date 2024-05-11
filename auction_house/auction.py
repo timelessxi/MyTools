@@ -141,10 +141,3 @@ class AuctionHouseManager:
             database=database,
         )
         return result[0][0] if result else 0
-
-
-# Example of usage:
-# auction_manager = AuctionHouseManager()
-# auction_manager.update_auction_house()
-# auction_manager.buy_random_items()
-# auction_manager.buy_all_items()
